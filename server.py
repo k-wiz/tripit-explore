@@ -49,20 +49,43 @@ def process_token():
     authorized_oauth_token = tokens["oauth_token"]
     authorized_oauth_token_secret = tokens["oauth_token_secret"]
 
-    # get profile info and store validated tokens and tripid user_id in sessions
+    # Get profile info and store validated tokens and tripid user_id in sessions
     oauth_credential = tripit.OAuthConsumerCredential(consumer_key, consumer_secret, authorized_oauth_token, authorized_oauth_token_secret)
     t = tripit.TripIt(oauth_credential, api_url='https://api.tripit.com')
-
-    # '''
-    # t.get_profile()
-
-    # profile = xmltodict.parse(t.response)
-    # user_id = profile['Response']['Profile']['ProfileEmailAddresses']['ProfileEmailAddresses']
-    # '''
     t.list_trip()
-    print t.list_trip()
-    print t.response
-    return "%s" % t.response
+
+    # Parse API response. 
+    soup = BeautifulSoup(t.response, "lxml")
+    start_date = soup.trip.start_date.string
+    print "TRIP START_DATE", start_date
+    end_date = soup.trip.end_date.string
+    print "TRIP END_DATE", end_date
+    trip_name = soup.trip.display_name.string
+    print "TRIP NAME", trip_name
+    location = soup.trip.primary_location.string
+    print "TRIP LOCATION", location
+
+    # Print list of all trips. 
+    # For trip object in trips, print name, location, start_date, end_date
+    print "ALL TRIPS", soup.find_all('trip')
+    trips = soup.find_all('trip')
+
+    for trip in trips:
+        start_date = trip.start_date.string
+        print "TRIP START_DATE", start_date
+        end_date = trip.end_date.string
+        print "TRIP END_DATE", end_date
+        trip_name = trip.display_name.string
+        print "TRIP NAME", trip_name
+        location = trip.primary_location.string
+        print "TRIP LOCATION", location
+
+
+    
+    return "Your trip, %s, to %s starts on %s and ends on %s" % (trip_name, 
+                                                                location,
+                                                                start_date,
+                                                                end_date)
 
 
 if __name__ == "__main__":
