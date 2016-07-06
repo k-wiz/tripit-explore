@@ -2,15 +2,24 @@ from flask import Flask,redirect, request
 app = Flask(__name__)
 import tripit
 import xmltodict
+import os
 
-consumer_key = '8fcf469df21bce70a07ebdb5e38376f0473fd462'
-consumer_secret = '0cbdaea1f2129d4f4fca0220153361088d6a4870'
 
+
+#Import consumer credentials.
+consumer_key = os.environ['consumer_key']
+consumer_secret = os.environ['consumer_secret']
+
+#Generate request token.
 oauth_credential = tripit.OAuthConsumerCredential(oauth_consumer_key=consumer_key, oauth_consumer_secret=consumer_secret)
 t = tripit.TripIt(oauth_credential)
 token_data = t.get_request_token()
+
+#Generate oauth token.
 oauth_token = token_data["oauth_token"]
 oauth_token_secret = token_data["oauth_token_secret"]
+
+
 
 @app.route('/')
 def hello():
