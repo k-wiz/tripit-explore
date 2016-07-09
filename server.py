@@ -1,4 +1,4 @@
-from flask import Flask,redirect, request
+from flask import Flask,redirect, request, render_template
 from flask_debugtoolbar import DebugToolbarExtension
 from bs4 import BeautifulSoup
 from jinja2 import StrictUndefined
@@ -56,36 +56,10 @@ def process_token():
 
     # Parse API response. 
     soup = BeautifulSoup(t.response, "lxml")
-    start_date = soup.trip.start_date.string
-    print "TRIP START_DATE", start_date
-    end_date = soup.trip.end_date.string
-    print "TRIP END_DATE", end_date
-    trip_name = soup.trip.display_name.string
-    print "TRIP NAME", trip_name
-    location = soup.trip.primary_location.string
-    print "TRIP LOCATION", location
-
-    # Print list of all trips. 
-    # For trip object in trips, print name, location, start_date, end_date
-    print "ALL TRIPS", soup.find_all('trip')
     trips = soup.find_all('trip')
 
-    for trip in trips:
-        start_date = trip.start_date.string
-        print "TRIP START_DATE", start_date
-        end_date = trip.end_date.string
-        print "TRIP END_DATE", end_date
-        trip_name = trip.display_name.string
-        print "TRIP NAME", trip_name
-        location = trip.primary_location.string
-        print "TRIP LOCATION", location
-
-
+    return render_template("trips.html", trips=trips)
     
-    return "Your trip, %s, to %s starts on %s and ends on %s" % (trip_name, 
-                                                                location,
-                                                                start_date,
-                                                                end_date)
 
 
 if __name__ == "__main__":
